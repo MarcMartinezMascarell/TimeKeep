@@ -1,37 +1,39 @@
 {
   "menu": [
     {
-      "url": "/",
-      "name": "Home",
-      "icon": "menu-icon tf-icons bx bx-home-circle",
-      "slug": "pages-home"
+      "name": "Fichar",
+      "icon": "menu-icon tf-icons bx bx-time-five",
+      "slug": "/fichar"
     },
     {
-      "url": "/page-2",
-      "icon": "menu-icon tf-icons bx bx-file",
-      "name": "Page 2",
-      "slug": "pages-page-2"
+      "name": "Mis informes",
+      "icon": "menu-icon tf-icons bx bx-clipboard",
+      "slug": "/mis-informes"
     },
     {
-      "url": "/pages/misc-error",
-      "name": "Error",
-      "icon": "menu-icon tf-icons bx bx-error",
-      "slug": "pages-misc-error",
-      "target": "_blank"
+      "name": "Calendario",
+      "icon": "menu-icon tf-icons bx bx-calendar disabled",
+      "slug": "/calendario"
     },
     {
-      "url": "/auth/login-basic",
-      "name": "Login",
-      "icon": "menu-icon tf-icons bx bx-log-in",
-      "slug": "auth-login-basic",
-      "target": "_blank"
+      "menuHeader": "Administración"
     },
     {
-      "url": "/auth/register-basic",
-      "name": "Register",
-      "icon": "menu-icon tf-icons bx bx-user",
-      "slug": "auth-register-basic",
-      "target": "_blank"
+      "name": "Mi Empresa",
+      "icon": "menu-icon tf-icons bx bx-building",
+      "slug": "/mi-empresa",
+      "submenu": [
+        {
+          "name": "Empleados",
+          "icon": "menu-icon tf-icons bx bx-user",
+          "slug": "/empleados"
+        },
+        {
+          "name": "Nuevo empleado",
+          "icon":"menu-icon tf-icons bx bx-user-plus",
+          "slug": "/nuevo-empleado"
+        }
+      ]
     }
   ]
 }

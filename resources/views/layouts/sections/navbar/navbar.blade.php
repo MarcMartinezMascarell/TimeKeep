@@ -35,52 +35,59 @@ $navbarDetached = ($navbarDetached ?? '');
 
       <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
 
-        <!-- Style Switcher -->
-        <div class="navbar-nav align-items-center">
-          <a class="nav-link style-switcher-toggle hide-arrow" href="javascript:void(0);">
-            <i class='bx bx-sm'></i>
-          </a>
-        </div>
-        <!--/ Style Switcher -->
-
         <ul class="navbar-nav flex-row align-items-center ms-auto">
 
+          <!-- Style Switcher -->
+          <li class="nav-item">
+            <a class="nav-link style-switcher-toggle hide-arrow" href="javascript:void(0);">
+              <i class='bx bx-sm'></i>
+            </a>
+          </li>
+          <!--/ Style Switcher -->
+
+          @auth
           <!-- Notification -->
           <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-1">
             <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
               <i class="bx bx-bell bx-sm"></i>
-              <span class="badge bg-danger rounded-pill badge-notifications">{{Auth::user()->notifications->count()}}</span>
+              <span id="badge-notifications" class="badge bg-{{Auth::user()->notifications->where('read_at', '=', null)->count() > 0 ? 'danger' : 'primary'}} rounded-pill badge-notifications">{{Auth::user()->notifications->where('read_at', '=', null)->count()}}</span>
             </a>
             <ul class="dropdown-menu dropdown-menu-end py-0">
               <li class="dropdown-menu-header border-bottom">
                 <div class="dropdown-header d-flex align-items-center py-3">
                   <h5 class="text-body mb-0 me-auto">Notification</h5>
-                  <a href="javascript:void(0)" class="dropdown-notifications-all text-body" data-bs-toggle="tooltip" data-bs-placement="top" title="Mark all as read"><i class="bx fs-4 bx-envelope-open"></i></a>
+                  <a id="read-all-notifications" href="{{route('notifications.read-all')}}" class="dropdown-notifications-all text-body" data-bs-toggle="tooltip" data-bs-placement="top" title="Mark all as read"><i class="bx fs-4 bx-envelope-open"></i></a>
                 </div>
               </li>
               <li class="dropdown-notifications-list scrollable-container">
                 <ul class="list-group list-group-flush">
-                  @forelse (Auth::user()->notifications as $notification)
+                  @forelse (Auth::user()->notifications->where('read_at', null) as $notification)
                   <li class="list-group-item list-group-item-action dropdown-notifications-item">
                     <div class="d-flex">
                       <div class="flex-shrink-0 me-3">
                         <div class="avatar">
-                          <img src="{{ asset('assets/img/avatars/1.png') }}" alt class="w-px-40 h-auto rounded-circle">
+                          <img src="{{ asset('assets/img/avatars/1.png') }}" alt class="img-fluid w-px-40 h-auto rounded-circle">
                         </div>
                       </div>
                       <div class="flex-grow-1">
-                        <h6 class="mb-1">{{$notification->data['title']}}</h6>
-                        <p class="mb-0">{{$notification->data['message']}}</p>
+                        <a href="{{isset($notification->data['route']) ? route($notification->data['route']) : '#'}}">
+                          <h6 class="mb-1">{{$notification->data['title']}}</h6>
+                          <p class="mb-0">{{$notification->data['message']}}</p>
+                        </a>
                         <small class="text-muted">{{Carbon\Carbon::parse($notification->created_at)->diffForHumans(now())}}</small>
                       </div>
                       <div class="flex-shrink-0 dropdown-notifications-actions">
-                        <a href="javascript:void(0)" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
-                        <a href="javascript:void(0)" class="dropdown-notifications-archive"><span class="bx bx-x"></span></a>
+                        <a data-id="{{$notification->id}}" href="javascript:void(0)" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
+                        <a data-id="{{$notification->id}}" href="javascript:void(0)" class="dropdown-notifications-archive"><span class="bx bx-x"></span></a>
                       </div>
                     </div>
                   </li>
                   @empty
-                    Todavía no tienes notificaciones...
+                  <li class="dropdown-menu-footer border-top">
+                    <p class="dropdown-item d-flex justify-content-center align-items-center text-muted p-2 mb-0 h-px-40">
+                      {{__("Todavía no tienes notificaciones...")}}
+                    </p>
+                  </li>
                   @endforelse
 
                 </ul>
@@ -92,13 +99,14 @@ $navbarDetached = ($navbarDetached ?? '');
               </li> --}}
             </ul>
           </li>
+          @endauth
           <!--/ Notification -->
 
           <!-- User -->
           <li class="nav-item navbar-dropdown dropdown-user dropdown">
             <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
               <div class="avatar avatar-online">
-                <img src="{{ Auth::user() ? Auth::user()->profile_photo_url : asset('assets/img/avatars/1.png') }}" alt class="w-px-40 h-auto rounded-circle">
+                <img src="{{ Auth::user() ? Auth::user()->profile_photo_url : asset('assets/img/avatars/1.png') }}" alt style="object-fit:cover;" class="img-fluid w-px-40 h-auto rounded-circle">
               </div>
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
@@ -128,8 +136,8 @@ $navbarDetached = ($navbarDetached ?? '');
               </li>
               <li>
                 <a class="dropdown-item" href="{{ Route::has('profile.show') ? route('profile.show') : 'javascript:void(0);' }}">
-                  <i class="bx bx-user me-2"></i>
-                  <span class="align-middle">My Profile</span>
+                  <i class="bx bx-cog me-2"></i>
+                  <span class="align-middle">Settings</span>
                 </a>
               </li>
               @if (Auth::check() && Laravel\Jetstream\Jetstream::hasApiFeatures())
@@ -219,3 +227,43 @@ $navbarDetached = ($navbarDetached ?? '');
     @endif
   </nav>
   <!-- / Navbar -->
+
+
+  <script>
+    //Ajax call on read all notification
+    let badge = document.getElementById('badge-notifications');
+    document.getElementById('read-all-notifications').addEventListener('click', function(e) {
+      e.preventDefault();
+      console.log('click');
+      $.ajax({
+        url: "{{ route('notifications.read-all') }}",
+        type: "GET",
+        success: function(data) {
+          if (data.status == 'success') {
+            badge.html(0);
+            badge.removeClass('bg-danger').addClass('bg-primary');
+          }
+        }
+      });
+    });
+    //Ajax call on read single notification
+    document.querySelector('.dropdown-notifications-read').addEventListener('click', function(e) {
+      e.preventDefault();
+      console.log(badge);
+      let id = e.target.parentElement.getAttribute('data-id');
+      $.ajax({
+        url: "{{ route('notifications.read', ['id' => ':id']) }}".replace(':id', id),
+        type: "GET",
+        success: function(data) {
+          console.log(data);
+          if (data.status == 'success') {
+            let currentValue = parseInt(badge.innerHTML);
+            badge.innerHTML = currentValue - 1;
+            if (currentValue <= 1) {
+              $('#badge-notifications').removeClass('bg-danger').addClass('bg-primary');
+            }
+          }
+        }
+      });
+    });
+  </script>

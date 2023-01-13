@@ -30,4 +30,15 @@ Route::middleware(['auth:sanctum',config('jetstream.auth_session'),'verified'])-
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+    //NOTIFICATIONS
+      //Read all notifications
+      Route::get('read-all-notifications', function () {
+          auth()->user()->unreadNotifications->markAsRead();
+          return response(['status' => 'success'], 200);
+      })->name('notifications.read-all');
+      //Read single notification
+      Route::get('read-notification/{id}', function ($id) {
+          auth()->user()->unreadNotifications->find($id)->markAsRead();
+          return response(['status' => 'success'], 200);
+      })->name('notifications.read');
 });

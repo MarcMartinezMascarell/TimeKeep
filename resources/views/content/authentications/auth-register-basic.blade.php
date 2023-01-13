@@ -47,12 +47,12 @@ $customizerHidden = 'customizer-hide';
 
           <form id="formAuthentication" class="mb-3" action="{{url('/')}}" method="GET">
             <div class="mb-3">
-              <label for="username" class="form-label">Username</label>
-              <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username" autofocus>
+              <label for="username" class="form-label">Name</label>
+              <input type="text" class="form-control" id="username" name="username" placeholder="John Doe" autofocus>
             </div>
             <div class="mb-3">
               <label for="email" class="form-label">Email</label>
-              <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email">
+              <input type="text" class="form-control" id="email" name="email" placeholder="john.doe@mail.com">
             </div>
             <div class="mb-3 form-password-toggle">
               <label class="form-label" for="password">Password</label>
