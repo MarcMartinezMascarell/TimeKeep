@@ -4,6 +4,8 @@
 
 'use strict';
 
+console.log('Im here');
+
 // Datatable (jquery)
 $(function () {
   // Variable declaration for table

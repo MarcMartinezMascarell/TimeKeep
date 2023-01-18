@@ -16,17 +16,20 @@
       "slug": "/calendario"
     },
     {
-      "menuHeader": "Administración"
+      "menuHeader": "Administración",
+      "roles": ["company_admin"]
     },
     {
       "name": "Mi Empresa",
       "icon": "menu-icon tf-icons bx bx-building",
       "slug": "/mi-empresa",
+      "roles": ["company_admin"],
       "submenu": [
         {
+          "url": "/company/users/",
           "name": "Empleados",
           "icon": "menu-icon tf-icons bx bx-user",
-          "slug": "/empleados"
+          "slug": "/company/users/"
         },
         {
           "name": "Nuevo empleado",

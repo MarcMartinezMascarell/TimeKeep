@@ -35,6 +35,7 @@ class CreateNewUser implements CreatesNewUsers
                 'email' => $input['email'],
                 'password' => Hash::make($input['password']),
             ]), function (User $user) {
+                $user->assignRole('user');
                 $this->createTeam($user);
             });
         });
@@ -54,4 +55,5 @@ class CreateNewUser implements CreatesNewUsers
             'personal_team' => true,
         ]));
     }
+
 }

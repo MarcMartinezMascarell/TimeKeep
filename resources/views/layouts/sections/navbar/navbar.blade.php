@@ -126,7 +126,7 @@ $navbarDetached = ($navbarDetached ?? '');
                         John Doe
                         @endif
                       </span>
-                      <small class="text-muted">Admin</small>
+                      <small class="text-muted">{{Auth::user()->company[0]->name}}</small>
                     </div>
                   </div>
                 </a>
@@ -154,7 +154,7 @@ $navbarDetached = ($navbarDetached ?? '');
                   <span class="align-middle">Billing</span>
                 </a>
               </li>
-              @if (Auth::User() && Laravel\Jetstream\Jetstream::hasTeamFeatures())
+              {{-- @if (Auth::User() && Laravel\Jetstream\Jetstream::hasTeamFeatures())
               <li>
                 <div class="dropdown-divider"></div>
               </li>
@@ -189,7 +189,7 @@ $navbarDetached = ($navbarDetached ?? '');
               </li>
               @if (Auth::user())
               @foreach (Auth::user()->allTeams() as $team)
-              {{-- Below commented code read by artisan command while installing jetstream. !! Do not remove if you want to use jetstream. --}}
+              {{-- Below commented code read by artisan command while installing jetstream. !! Do not remove if you want to use jetstream.
 
               <x-jet-switchable-team :team="$team" />
               @endforeach
@@ -215,7 +215,7 @@ $navbarDetached = ($navbarDetached ?? '');
                   <span class="align-middle">Login</span>
                 </a>
               </li>
-              @endif
+              @endif --}}
             </ul>
           </li>
           <!--/ User -->
@@ -247,7 +247,9 @@ $navbarDetached = ($navbarDetached ?? '');
       });
     });
     //Ajax call on read single notification
-    document.querySelector('.dropdown-notifications-read').addEventListener('click', function(e) {
+    let notifications = document.querySelector('.dropdown-notifications-read');
+    if(notifications) {
+      notifications.addEventListener('click', function(e) {
       e.preventDefault();
       console.log(badge);
       let id = e.target.parentElement.getAttribute('data-id');
@@ -266,4 +268,5 @@ $navbarDetached = ($navbarDetached ?? '');
         }
       });
     });
+    }
   </script>

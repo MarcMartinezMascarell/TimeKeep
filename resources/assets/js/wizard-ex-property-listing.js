@@ -70,11 +70,11 @@
     // Wizard form
     const wizardPropertyListingForm = wizardPropertyListing.querySelector('#wizard-property-listing-form');
     // Wizard steps
-    const wizardPropertyListingFormStep1 = wizardPropertyListingForm.querySelector('#personal-details');
-    const wizardPropertyListingFormStep2 = wizardPropertyListingForm.querySelector('#property-details');
-    const wizardPropertyListingFormStep3 = wizardPropertyListingForm.querySelector('#property-features');
-    const wizardPropertyListingFormStep4 = wizardPropertyListingForm.querySelector('#property-area');
-    const wizardPropertyListingFormStep5 = wizardPropertyListingForm.querySelector('#price-details');
+    const wizardPropertyListingFormStep1 = wizardPropertyListingForm.querySelector('#basic-information');
+    const wizardPropertyListingFormStep2 = wizardPropertyListingForm.querySelector('#billing-info');
+    // const wizardPropertyListingFormStep3 = wizardPropertyListingForm.querySelector('#property-features');
+    // const wizardPropertyListingFormStep4 = wizardPropertyListingForm.querySelector('#property-area');
+    // const wizardPropertyListingFormStep5 = wizardPropertyListingForm.querySelector('#price-details');
     // Wizard next prev button
     const wizardPropertyListingNext = [].slice.call(wizardPropertyListingForm.querySelectorAll('.btn-next'));
     const wizardPropertyListingPrev = [].slice.call(wizardPropertyListingForm.querySelectorAll('.btn-prev'));
@@ -87,20 +87,23 @@
     const FormValidation1 = FormValidation.formValidation(wizardPropertyListingFormStep1, {
       fields: {
         // * Validate the fields here based on your requirements
-        plFirstName: {
+        name: {
           validators: {
             notEmpty: {
-              message: 'Please enter your first name'
+              message: 'Please enter Company Name'
             }
           }
         },
-        plLastName: {
+        email: {
           validators: {
             notEmpty: {
-              message: 'Please enter your first name'
+              message: 'Please enter email'
+            },
+            emailAddress: {
+              message: 'The value is not a valid email address'
             }
           }
-        }
+        },
       },
 
       plugins: {
@@ -127,19 +130,41 @@
       validationStepper.next();
     });
 
-    // Property Details
+    // select2 (Property type)
+    const plPropertyType = $('#plPropertyType');
+    if (plPropertyType.length) {
+      plPropertyType.wrap('<div class="position-relative"></div>');
+      plPropertyType
+        .select2({
+          placeholder: 'Select property type',
+          dropdownParent: plPropertyType.parent()
+        })
+        .on('change.select2', function () {
+          // Revalidate the color field when an option is chosen
+          FormValidation2.revalidateField('plPropertyType');
+        });
+    }
+
+    // Billing info
     const FormValidation2 = FormValidation.formValidation(wizardPropertyListingFormStep2, {
       fields: {
         // * Validate the fields here based on your requirements
 
-        plPropertyType: {
+        full_name: {
           validators: {
             notEmpty: {
               message: 'Please select property type'
             }
           }
         },
-        plZipCode: {
+        cif: {
+          validators: {
+            notEmpty: {
+              message: 'Please enter CIF'
+            }
+          }
+        },
+        zip: {
           validators: {
             notEmpty: {
               message: 'Please enter zip code'
@@ -150,7 +175,35 @@
               message: 'The zip code must be more than 4 and less than 10 characters long'
             }
           }
-        }
+        },
+        address: {
+          validators: {
+            notEmpty: {
+              message: 'Please enter address'
+            }
+          }
+        },
+        city: {
+          validators: {
+            notEmpty: {
+              message: 'Please enter city'
+            }
+          }
+        },
+        country: {
+          validators: {
+            notEmpty: {
+              message: 'Please select country'
+            }
+          }
+        },
+        state: {
+          validators: {
+            notEmpty: {
+              message: 'Please select state'
+            }
+          }
+        },
       },
       plugins: {
         trigger: new FormValidation.plugins.Trigger(),
@@ -169,92 +222,80 @@
           }
         }),
         autoFocus: new FormValidation.plugins.AutoFocus(),
-        submitButton: new FormValidation.plugins.SubmitButton()
+        submitButton: new FormValidation.plugins.SubmitButton(),
+        defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
       }
     }).on('core.form.valid', function () {
-      // Jump to the next step when all fields in the current step are valid
-      validationStepper.next();
-    });
+        // You can submit the form
+        wizardPropertyListingForm.submit()
+        // or send the form data to server via an Ajax request
+        // To make the demo simple, I just placed an alert
+      });
 
-    // select2 (Property type)
-    const plPropertyType = $('#plPropertyType');
-    if (plPropertyType.length) {
-      plPropertyType.wrap('<div class="position-relative"></div>');
-      plPropertyType
-        .select2({
-          placeholder: 'Select property type',
-          dropdownParent: plPropertyType.parent()
-        })
-        .on('change.select2', function () {
-          // Revalidate the color field when an option is chosen
-          FormValidation2.revalidateField('plPropertyType');
-        });
-    }
+    // // Property Features
+    // const FormValidation3 = FormValidation.formValidation(wizardPropertyListingFormStep3, {
+    //   fields: {
+    //     // * Validate the fields here based on your requirements
+    //   },
+    //   plugins: {
+    //     trigger: new FormValidation.plugins.Trigger(),
+    //     bootstrap5: new FormValidation.plugins.Bootstrap5({
+    //       // Use this for enabling/changing valid/invalid class
+    //       // eleInvalidClass: '',
+    //       eleValidClass: '',
+    //       rowSelector: '.col-sm-6'
+    //     }),
+    //     autoFocus: new FormValidation.plugins.AutoFocus(),
+    //     submitButton: new FormValidation.plugins.SubmitButton()
+    //   }
+    // }).on('core.form.valid', function () {
+    //   validationStepper.next();
+    // });
 
-    // Property Features
-    const FormValidation3 = FormValidation.formValidation(wizardPropertyListingFormStep3, {
-      fields: {
-        // * Validate the fields here based on your requirements
-      },
-      plugins: {
-        trigger: new FormValidation.plugins.Trigger(),
-        bootstrap5: new FormValidation.plugins.Bootstrap5({
-          // Use this for enabling/changing valid/invalid class
-          // eleInvalidClass: '',
-          eleValidClass: '',
-          rowSelector: '.col-sm-6'
-        }),
-        autoFocus: new FormValidation.plugins.AutoFocus(),
-        submitButton: new FormValidation.plugins.SubmitButton()
-      }
-    }).on('core.form.valid', function () {
-      validationStepper.next();
-    });
+    // // Property Area
+    // const FormValidation4 = FormValidation.formValidation(wizardPropertyListingFormStep4, {
+    //   fields: {
+    //     // * Validate the fields here based on your requirements
+    //   },
+    //   plugins: {
+    //     trigger: new FormValidation.plugins.Trigger(),
+    //     bootstrap5: new FormValidation.plugins.Bootstrap5({
+    //       // Use this for enabling/changing valid/invalid class
+    //       // eleInvalidClass: '',
+    //       eleValidClass: '',
+    //       rowSelector: '.col-md-12'
+    //     }),
+    //     autoFocus: new FormValidation.plugins.AutoFocus(),
+    //     submitButton: new FormValidation.plugins.SubmitButton()
+    //   }
+    // }).on('core.form.valid', function () {
+    //   // Jump to the next step when all fields in the current step are valid
+    //   validationStepper.next();
+    // });
 
-    // Property Area
-    const FormValidation4 = FormValidation.formValidation(wizardPropertyListingFormStep4, {
-      fields: {
-        // * Validate the fields here based on your requirements
-      },
-      plugins: {
-        trigger: new FormValidation.plugins.Trigger(),
-        bootstrap5: new FormValidation.plugins.Bootstrap5({
-          // Use this for enabling/changing valid/invalid class
-          // eleInvalidClass: '',
-          eleValidClass: '',
-          rowSelector: '.col-md-12'
-        }),
-        autoFocus: new FormValidation.plugins.AutoFocus(),
-        submitButton: new FormValidation.plugins.SubmitButton()
-      }
-    }).on('core.form.valid', function () {
-      // Jump to the next step when all fields in the current step are valid
-      validationStepper.next();
-    });
-
-    // Price Details
-    const FormValidation5 = FormValidation.formValidation(wizardPropertyListingFormStep5, {
-      fields: {
-        // * Validate the fields here based on your requirements
-      },
-      plugins: {
-        trigger: new FormValidation.plugins.Trigger(),
-        bootstrap5: new FormValidation.plugins.Bootstrap5({
-          // Use this for enabling/changing valid/invalid class
-          // eleInvalidClass: '',
-          eleValidClass: '',
-          rowSelector: '.col-md-12'
-        }),
-        autoFocus: new FormValidation.plugins.AutoFocus(),
-        submitButton: new FormValidation.plugins.SubmitButton()
-      }
-    }).on('core.form.valid', function () {
-      // You can submit the form
-      // wizardPropertyListingForm.submit()
-      // or send the form data to server via an Ajax request
-      // To make the demo simple, I just placed an alert
-      alert('Submitted..!!');
-    });
+    // // Price Details
+    // const FormValidation5 = FormValidation.formValidation(wizardPropertyListingFormStep5, {
+    //   fields: {
+    //     // * Validate the fields here based on your requirements
+    //   },
+    //   plugins: {
+    //     trigger: new FormValidation.plugins.Trigger(),
+    //     bootstrap5: new FormValidation.plugins.Bootstrap5({
+    //       // Use this for enabling/changing valid/invalid class
+    //       // eleInvalidClass: '',
+    //       eleValidClass: '',
+    //       rowSelector: '.col-md-12'
+    //     }),
+    //     autoFocus: new FormValidation.plugins.AutoFocus(),
+    //     submitButton: new FormValidation.plugins.SubmitButton()
+    //   }
+    // }).on('core.form.valid', function () {
+    //   // You can submit the form
+    //   // wizardPropertyListingForm.submit()
+    //   // or send the form data to server via an Ajax request
+    //   // To make the demo simple, I just placed an alert
+    //   alert('Submitted..!!');
+    // });
 
     wizardPropertyListingNext.forEach(item => {
       item.addEventListener('click', event => {
@@ -268,18 +309,6 @@
             FormValidation2.validate();
             break;
 
-          case 2:
-            FormValidation3.validate();
-            break;
-
-          case 3:
-            FormValidation4.validate();
-            break;
-
-          case 4:
-            FormValidation5.validate();
-            break;
-
           default:
             break;
         }
@@ -289,18 +318,6 @@
     wizardPropertyListingPrev.forEach(item => {
       item.addEventListener('click', event => {
         switch (validationStepper._currentIndex) {
-          case 4:
-            validationStepper.previous();
-            break;
-
-          case 3:
-            validationStepper.previous();
-            break;
-
-          case 2:
-            validationStepper.previous();
-            break;
-
           case 1:
             validationStepper.previous();
             break;
