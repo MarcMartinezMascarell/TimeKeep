@@ -49,6 +49,7 @@ Route::middleware(['auth:sanctum',config('jetstream.auth_session'),'verified'])-
       })->name('notifications.read');
 
     //COMPANY ADMINISTRATION
+    Route::get('company/users-list', [CompanyController::class, 'usersList'])->name('users.list');
     Route::middleware(['role:company_admin'])->group(function () {
       Route::get('company/users/', [CompanyController::class, 'users'])->name('company.users');
       //Company CRUD

@@ -126,7 +126,7 @@ $navbarDetached = ($navbarDetached ?? '');
                         John Doe
                         @endif
                       </span>
-                      <small class="text-muted">{{Auth::user()->company[0]->name}}</small>
+                      <small class="text-muted">@isset(Auth::user()->company[0]) {{Auth::user()->company[0]->name}} @endisset</small>
                     </div>
                   </div>
                 </a>

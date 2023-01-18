@@ -12,7 +12,6 @@ use App\Models\Company;
 class CompanyController extends Controller
 {
     public function index() {
-      return 'hola';
       if(auth()->user()->hasRole('super-admin'))
         return view('company.index');
       else
@@ -60,6 +59,14 @@ class CompanyController extends Controller
         $company = Company::find($user->company[0]->id);
         $company->users;
         return view('company.users', compact('company'));
+      }
+    }
+
+    public function usersList() {
+      if($user = Auth::user()) {
+        $company = Company::find($user->company[0]->id);
+        $company->users;
+        return response(['data' => $company->users]);
       }
     }
 

@@ -123,15 +123,13 @@
     <h5 class="card-title mb-0">Search Filter</h5>
   </div>
   <div class="card-datatable table-responsive">
-    <table class="datatables-users table border-top">
+    <table id="company_users" class="datatables-users table border-top">
       <thead>
         <tr>
-          <th></th>
           <th>Id</th>
           <th>User</th>
           <th>Email</th>
-          <th>Verified</th>
-          <th>Actions</th>
+          <th>Created at</th>
         </tr>
       </thead>
     </table>
