@@ -20,4 +20,8 @@ trait hasCompany {
     return $this->company->user_id == $this->id;
   }
 
+  public function hasCompanyInvitation() {
+    return $this->hasOne('App\Models\Company_invitation', 'email', 'email');
+}
+
 }

@@ -26,6 +26,10 @@ Route::get('/pages/misc-error', $controller_path . '\pages\MiscError@index')->na
 // Route::get('/auth/login-basic', $controller_path . '\authentications\LoginBasic@index')->name('auth-login-basic');
 // Route::get('/auth/register-basic', $controller_path . '\authentications\RegisterBasic@index')->name('auth-register-basic');
 
+
+//Accept invitation
+Route::get('/accept-company-invitation', [CompanyController::class, 'acceptInvitation'])->name('accept.invitation');
+
 Route::middleware(['auth:sanctum',config('jetstream.auth_session'),'verified'])->group(function () {
     $controller_path = 'App\Http\Controllers';
     // Main Page Route
@@ -36,17 +40,19 @@ Route::middleware(['auth:sanctum',config('jetstream.auth_session'),'verified'])-
         return view('dashboard');
     })->name('dashboard');
 
+
     //NOTIFICATIONS
       //Read all notifications
       Route::get('read-all-notifications', function () {
-          auth()->user()->unreadNotifications->markAsRead();
+        auth()->user()->unreadNotifications->markAsRead();
           return response(['status' => 'success'], 200);
       })->name('notifications.read-all');
       //Read single notification
       Route::get('read-notification/{id}', function ($id) {
-          auth()->user()->unreadNotifications->find($id)->markAsRead();
+        auth()->user()->unreadNotifications->find($id)->markAsRead();
           return response(['status' => 'success'], 200);
       })->name('notifications.read');
+
 
     //COMPANY ADMINISTRATION
     Route::get('company/users-list', [CompanyController::class, 'usersList'])->name('users.list');
@@ -55,4 +61,5 @@ Route::middleware(['auth:sanctum',config('jetstream.auth_session'),'verified'])-
       //Company CRUD
       Route::resource('company', CompanyController::class);
     });
+    Route::post('company/send-invitation', [CompanyController::class, 'sendInvitation'])->name('send.invitation');
 });

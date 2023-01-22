@@ -18,6 +18,9 @@ return new class extends Migration
           $table->string('invitation_token');
           $table->foreignId('company_id')->constrained()->cascadeOnDelete();
           $table->string('email');
+          $table->string('name');
+          $table->string('surname');
+          $table->string('job')->nullable();
           $table->string('role')->nullable();
           $table->timestamps();
 

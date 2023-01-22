@@ -197,7 +197,7 @@ $navbarDetached = ($navbarDetached ?? '');
               @endif
               <li>
                 <div class="dropdown-divider"></div>
-              </li>
+              </li> --}}
               @if (Auth::check())
               <li>
                 <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -215,7 +215,7 @@ $navbarDetached = ($navbarDetached ?? '');
                   <span class="align-middle">Login</span>
                 </a>
               </li>
-              @endif --}}
+              @endif
             </ul>
           </li>
           <!--/ User -->

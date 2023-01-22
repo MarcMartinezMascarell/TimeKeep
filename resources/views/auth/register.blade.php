@@ -40,9 +40,10 @@ $customizerHidden = 'customizer-hide';
 
         <form id="formAuthentication" class="mb-3" action="{{ route('register') }}" method="POST">
           @csrf
+          <input type="hidden" name="role" value="{{($invitation) ? $invitation->role : 'user'}}">
           <div class="mb-3">
             <label for="username" class="form-label">Name</label>
-            <input type="text" class="form-control @error('name') is-invalid @enderror" id="username" name="name" placeholder="John Doe" autofocus value="{{ old('name') }}" />
+            <input type="text" class="form-control @error('name') is-invalid @enderror" id="username" name="name" placeholder="John Doe" autofocus value="{{ ($invitation) ? $invitation->name : old('name') }}" />
             @error('name')
             <span class="invalid-feedback" role="alert">
               <strong>{{ $message }}</strong>
@@ -51,7 +52,7 @@ $customizerHidden = 'customizer-hide';
           </div>
           <div class="mb-3">
             <label for="email" class="form-label">Email</label>
-            <input type="text" class="form-control @error('email') is-invalid @enderror" id="email" name="email" placeholder="john@example.com" value="{{ old('email') }}" />
+            <input type="text" class="form-control @error('email') is-invalid @enderror" id="email" name="email" placeholder="john@example.com" value="{{ ($invitation) ? $invitation->email : old('email') }}" />
             @error('email')
             <span class="invalid-feedback" role="alert">
               <strong>{{ $message }}</strong>

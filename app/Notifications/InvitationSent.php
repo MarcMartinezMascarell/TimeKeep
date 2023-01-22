@@ -8,9 +8,8 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 use App\Models\Company_invitation;
-use App\Models\Company;
 
-class CompanyInvitation extends Notification
+class InvitationSent extends Notification
 {
     use Queueable;
 
@@ -32,7 +31,7 @@ class CompanyInvitation extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return ['database'];
     }
 
     /**
@@ -43,16 +42,19 @@ class CompanyInvitation extends Notification
      */
     public function toMail($notifiable)
     {
-
-      $company = Company::find($this->invitation->company_id);
-      $url = url('/accept-company-invitation/?token=' . $this->invitation->invitation_token . '&email=' . $this->invitation->email . '&company=' . $this->invitation->company_id);
-
         return (new MailMessage)
-                    ->subject('Invitation to join a company')
-                    ->greeting('Hello! You have been invited to join ' . $company->name . '.')
-                    ->line("Accept the invitation by clicking the button below. If you don't have an account, you will be asked to create one.")
-                    ->action('Accept Invitation', $url)
-                    ->line('If you did not expect to receive an invitation to this company, you may discard this email.');
+                    ->line('The introduction to the notification.')
+                    ->action('Notification Action', url('/'))
+                    ->line('Thank you for using our application!');
+    }
+
+    public function toDatabase($notifiable)
+    {
+        return [
+            'title' => 'Invitation Sent',
+            'message' => 'You have sent an invitation to ' . $this->invitation->name . ' ' . $this->invitation->surname . '.',
+            'link' => '/company/users'
+        ];
     }
 
     /**

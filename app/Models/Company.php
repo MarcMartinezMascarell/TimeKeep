@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
+use App\Models\Company_invitation;
 
 class Company extends Model
 {
@@ -28,5 +29,9 @@ class Company extends Model
 
     public function users() {
         return $this->belongsToMany(User::class, 'company_user', 'company_id', 'user_id')->withPivot('role');
+    }
+
+    public function invitations() {
+        return $this->hasMany(Company_invitation::class, 'company_id', 'id');
     }
 }

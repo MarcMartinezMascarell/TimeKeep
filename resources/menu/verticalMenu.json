@@ -3,7 +3,8 @@
     {
       "name": "Fichar",
       "icon": "menu-icon tf-icons bx bx-time-five",
-      "slug": "/fichar"
+      "slug": "/home",
+      "url": "/home"
     },
     {
       "name": "Mis informes",
@@ -17,24 +18,25 @@
     },
     {
       "menuHeader": "Administración",
-      "roles": ["company_admin"]
+      "roles": ["company_admin", "company_manager"]
     },
     {
       "name": "Mi Empresa",
       "icon": "menu-icon tf-icons bx bx-building",
       "slug": "/mi-empresa",
-      "roles": ["company_admin"],
+      "roles": ["company_admin", "company_manager"],
       "submenu": [
+        {
+          "url": "/company/users/",
+          "name": "Estadísticas",
+          "icon": "menu-icon tf-icons bx bx-bar-chart-alt-2",
+          "slug": "/company/users/"
+        },
         {
           "url": "/company/users/",
           "name": "Empleados",
           "icon": "menu-icon tf-icons bx bx-user",
           "slug": "/company/users/"
-        },
-        {
-          "name": "Nuevo empleado",
-          "icon":"menu-icon tf-icons bx bx-user-plus",
-          "slug": "/nuevo-empleado"
         }
       ]
     }

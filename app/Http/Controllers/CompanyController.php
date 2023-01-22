@@ -6,8 +6,10 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Notification;
 
 use App\Models\Company;
+use App\Models\Company_invitation;
 
 class CompanyController extends Controller
 {
@@ -67,6 +69,42 @@ class CompanyController extends Controller
         $company = Company::find($user->company[0]->id);
         $company->users;
         return response(['data' => $company->users]);
+      }
+    }
+
+    public function sendInvitation(Request $request) {
+      if(Auth::user()->hasRole('company_admin')) {
+        $user = Auth::user();
+        $invitation = new Company_invitation;
+        $invitation->email = $request->email;
+        $invitation->name = $request->name;
+        $invitation->surname = $request->surname;
+        $invitation->job = $request->job;
+        $invitation->company_id = $request->company_id;
+        $invitation->role = $request->role;
+        $invitation->invitation_token = Str::random(20);
+        $invitation->save();
+        Notification::route('mail', $request->email)->notify(new \App\Notifications\CompanyInvitation($invitation));
+        $user->notify(new \App\Notifications\InvitationSent($invitation));
+        return response(['status' => 'success']);
+      }
+    }
+
+    public function acceptInvitation(Request $request) {
+      $invitation = Company_invitation::where('invitation_token', $request->token)->first();
+      if($invitation) {
+        if($user = Auth::user()) {
+          $user->company()->attach($invitation->company_id, ['role' => $invitation->role]);
+          $user->assignRole($invitation->role);
+          $invitation->delete();
+          return redirect()->route('pages-home')->with('success', 'You have been added to the company.');
+        }
+        else {
+          return view('auth.register', ['invitation' => $invitation]);
+        }
+      }
+      else {
+        return redirect()->route('pages-home')->with('error', 'Invitation not found.');
       }
     }
 
