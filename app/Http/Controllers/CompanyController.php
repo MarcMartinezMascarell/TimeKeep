@@ -14,10 +14,14 @@ use App\Models\Company_invitation;
 class CompanyController extends Controller
 {
     public function index() {
-      if(auth()->user()->hasRole('super-admin'))
-        return view('company.index');
-      else
+      if(auth()->user()->hasAnyRole(['super-admin', 'company_admin'])) {
+        $user = Auth::user();
+        $company = Company::find($user->company[0]->id);
+        $company->users;
+        return view('company.users', compact('company'));
+      } else {
         return redirect()->route('dashboard')->with('error', 'You do not have permission to access this page.');
+      }
     }
 
     public function create() {
@@ -25,8 +29,6 @@ class CompanyController extends Controller
     }
 
     public function store(Request $request) {
-        // $company = Company::create([$request->all(), 'id_public' => Str::random(20)]);
-
         $company = new Company;
         $company->name = $request->name;
         $company->id_public = Str::random(20);
@@ -40,6 +42,13 @@ class CompanyController extends Controller
         $company->city = $request->city;
         $company->zip = $request->zip;
         $company->cif = $request->cif;
+        if($request->file('logo_url')) {
+          $image = $request->file('logo_url');
+          $filename = str_replace(' ', '', $request->name) . '.' . $image->getClientOriginalExtension();
+          $location = public_path('images/companies' . $filename);
+          $request->logo_url->move(public_path('images/companies'), $filename);
+          $company->logo_url = url('/companies') . '/images/' . $filename;
+        }
         $company->save();
         Auth::user()->company()->attach($company->id, ['role' => 'owner']);
 

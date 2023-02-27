@@ -95,7 +95,7 @@
     </div> --}}
   </div>
   <div class="bs-stepper-content">
-    <form id="wizard-property-listing-form" onSubmit="return false" action="{{route('company.store')}}" method="POST"  novalidate>
+    <form id="wizard-property-listing-form" onSubmit="return false" action="{{route('company.store')}}" method="POST" novalidate enctype="multipart/form-data">
       @csrf
       <!-- Basic Information -->
       <div id="basic-information" class="content">
