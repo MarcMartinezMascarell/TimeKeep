@@ -42,6 +42,13 @@ class CompanyController extends Controller
         $company->city = $request->city;
         $company->zip = $request->zip;
         $company->cif = $request->cif;
+        if($request->file('logo_url')) {
+          $image = $request->file('logo_url');
+          $filename = str_replace(' ', '', $request->name) . '.' . $image->getClientOriginalExtension();
+          $location = public_path('images/companies' . $filename);
+          $request->logo_url->move(public_path('images/companies'), $filename);
+          $company->logo_url = url('/companies') . '/images/' . $filename;
+        }
         $company->save();
         Auth::user()->company()->attach($company->id, ['role' => 'owner']);
 
