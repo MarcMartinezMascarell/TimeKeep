@@ -23,10 +23,10 @@
 <script src="{{asset('assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.js')}}"></script>
 <script src="{{asset('assets/vendor/libs/datatables-buttons/datatables-buttons.js')}}"></script>
 <script src="{{asset('assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.js')}}"></script>
-<script src="{{asset('assets/vendor/libs/jszip/jszip.js')}}"></script>
 <script src="{{asset('assets/vendor/libs/pdfmake/pdfmake.js')}}"></script>
-<script src="{{asset('assets/vendor/libs/datatables-buttons/buttons.html5.js')}}"></script>
 <script src="{{asset('assets/vendor/libs/datatables-buttons/buttons.print.js')}}"></script>
+<script src="{{asset('assets/vendor/libs/jszip/jszip.js')}}"></script>
+<script src="{{asset('assets/vendor/libs/datatables-buttons/buttons.html5.js')}}"></script>
 <script src="{{asset('assets/vendor/libs/select2/select2.js')}}"></script>
 <script src="{{asset('assets/vendor/libs/formvalidation/dist/js/FormValidation.min.js')}}"></script>
 <script src="{{asset('assets/vendor/libs/formvalidation/dist/js/plugins/Bootstrap5.min.js')}}"></script>
@@ -117,7 +117,7 @@
   </div>
 </div>
 @if (Auth::user()->company[0]->invitations->count())
-<div class="row g-4 mb-4">
+<div class="row g-4 mb-4 invitations-container">
   <div class="col-sm-12 col-xl-12">
     <div class="card">
       <div class="card-body">
@@ -126,7 +126,7 @@
             <span class="mb-2">Pending invitations</span>
             {{-- <div class="d-flex align-items-end mt-2"> --}}
               @foreach (Auth::user()->company[0]->invitations as $invitation)
-              <div class="w-100 row justify-content-between">
+              <div class="invitation-item w-100 row justify-content-between">
                 <div class="col">
                   <small>{{$invitation->name}} {{$invitation->surname}}</small>
                 </div>
@@ -153,7 +153,7 @@
 </div>
 @endif
 <!-- Users List Table -->
-<div class="card">
+<div class="card users-container">
   <div class="card-header">
     <h5 class="card-title mb-0">Search Filter</h5>
   </div>
@@ -165,6 +165,8 @@
           <th>Id</th>
           <th>User</th>
           <th>Email</th>
+          <th>Job</th>
+          <th>Rol</th>
           <th>Created at</th>
         </tr>
       </thead>

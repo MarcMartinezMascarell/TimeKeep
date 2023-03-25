@@ -39,7 +39,7 @@ class CreateNewUser implements CreatesNewUsers
                 'id_public' => Str::upper(Str::random(6)),
                 'email' => $input['email'],
                 'password' => Hash::make($input['password']),
-            ]), function (User $user, $input) {
+            ]), function (User $user) {
                 $user->assignRole('user');
                 $this->createTeam($user);
             });

@@ -14,10 +14,14 @@ use App\Models\Company_invitation;
 class CompanyController extends Controller
 {
     public function index() {
-      if(auth()->user()->hasRole('super-admin'))
-        return view('company.index');
-      else
+      if(auth()->user()->hasAnyRole(['super-admin', 'company_admin'])) {
+        $user = Auth::user();
+        $company = Company::find($user->company[0]->id);
+        $company->users;
+        return view('company.users', compact('company'));
+      } else {
         return redirect()->route('dashboard')->with('error', 'You do not have permission to access this page.');
+      }
     }
 
     public function create() {
@@ -25,8 +29,6 @@ class CompanyController extends Controller
     }
 
     public function store(Request $request) {
-        // $company = Company::create([$request->all(), 'id_public' => Str::random(20)]);
-
         $company = new Company;
         $company->name = $request->name;
         $company->id_public = Str::random(20);
@@ -84,8 +86,8 @@ class CompanyController extends Controller
         $invitation->role = $request->role;
         $invitation->invitation_token = Str::random(20);
         $invitation->save();
-        Notification::route('mail', $request->email)->notify(new \App\Notifications\CompanyInvitation($invitation));
-        $user->notify(new \App\Notifications\InvitationSent($invitation));
+        //Notification::route('mail', $request->email)->notify(new \App\Notifications\CompanyInvitation($invitation));
+        $user->notify(new \App\Notifications\PhotoUpdated($invitation));
         return response(['status' => 'success']);
       }
     }

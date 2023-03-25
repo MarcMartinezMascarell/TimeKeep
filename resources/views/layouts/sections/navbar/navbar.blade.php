@@ -55,7 +55,7 @@ $navbarDetached = ($navbarDetached ?? '');
             <ul class="dropdown-menu dropdown-menu-end py-0">
               <li class="dropdown-menu-header border-bottom">
                 <div class="dropdown-header d-flex align-items-center py-3">
-                  <h5 class="text-body mb-0 me-auto">Notification</h5>
+                  <h5 class="text-body mb-0 me-auto">Notifications</h5>
                   <a id="read-all-notifications" href="{{route('notifications.read-all')}}" class="dropdown-notifications-all text-body" data-bs-toggle="tooltip" data-bs-placement="top" title="Mark all as read"><i class="bx fs-4 bx-envelope-open"></i></a>
                 </div>
               </li>
@@ -228,45 +228,3 @@ $navbarDetached = ($navbarDetached ?? '');
   </nav>
   <!-- / Navbar -->
 
-
-  <script>
-    //Ajax call on read all notification
-    let badge = document.getElementById('badge-notifications');
-    document.getElementById('read-all-notifications').addEventListener('click', function(e) {
-      e.preventDefault();
-      console.log('click');
-      $.ajax({
-        url: "{{ route('notifications.read-all') }}",
-        type: "GET",
-        success: function(data) {
-          if (data.status == 'success') {
-            badge.html(0);
-            badge.removeClass('bg-danger').addClass('bg-primary');
-          }
-        }
-      });
-    });
-    //Ajax call on read single notification
-    let notifications = document.querySelector('.dropdown-notifications-read');
-    if(notifications) {
-      notifications.addEventListener('click', function(e) {
-      e.preventDefault();
-      console.log(badge);
-      let id = e.target.parentElement.getAttribute('data-id');
-      $.ajax({
-        url: "{{ route('notifications.read', ['id' => ':id']) }}".replace(':id', id),
-        type: "GET",
-        success: function(data) {
-          console.log(data);
-          if (data.status == 'success') {
-            let currentValue = parseInt(badge.innerHTML);
-            badge.innerHTML = currentValue - 1;
-            if (currentValue <= 1) {
-              $('#badge-notifications').removeClass('bg-danger').addClass('bg-primary');
-            }
-          }
-        }
-      });
-    });
-    }
-  </script>

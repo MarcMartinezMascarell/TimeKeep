@@ -41,6 +41,8 @@ $(function () {
         { data: 'id_public' },
         { data: 'name' },
         { data: 'email' },
+        { data: 'job' },
+        { data: 'role' },
         { data: 'created_at' }
       ],
       columnDefs: [
@@ -106,6 +108,24 @@ $(function () {
             var $email = full['email'];
 
             return '<span class="user-email">' + $email + '</span>';
+          }
+        },
+        {
+          // User Job
+          targets: 3,
+          render: function (data, type, full, meta) {
+            var $job = full['job'];
+
+            return '<span class="user-email">' + $job + '</span>';
+          }
+        },
+        {
+          // User Role
+          targets: 3,
+          render: function (data, type, full, meta) {
+            var $role = full['role'];
+
+            return '<span class="user-email">' + $role + '</span>';
           }
         },
         {
@@ -226,26 +246,26 @@ $(function () {
               }
             },
             {
-              extend: 'excel',
+              extend: 'excelHtml5',
               title: 'Users',
               text: 'Excel',
               className: 'dropdown-item',
               exportOptions: {
                 columns: [2, 3],
                 // prevent avatar to be display
-                format: {
-                  body: function (inner, coldex, rowdex) {
-                    if (inner.length <= 0) return inner;
-                    var el = $.parseHTML(inner);
-                    var result = '';
-                    $.each(el, function (index, item) {
-                      if (item.classList.contains('user-name')) {
-                        result = result + item.lastChild.textContent;
-                      } else result = result + item.innerText;
-                    });
-                    return result;
-                  }
-                }
+                // format: {
+                //   body: function (inner, coldex, rowdex) {
+                //     if (inner.length <= 0) return inner;
+                //     var el = $.parseHTML(inner);
+                //     var result = '';
+                //     $.each(el, function (index, item) {
+                //       if (item.classList.contains('user-name')) {
+                //         result = result + item.lastChild.textContent;
+                //       } else result = result + item.innerText;
+                //     });
+                //     return result;
+                //   }
+                // }
               }
             },
             {
@@ -442,31 +462,31 @@ $(function () {
       name: {
         validators: {
           notEmpty: {
-            message: 'Please enter fullname'
+            message: 'Please enter name'
+          }
+        }
+      },
+      surname: {
+        validators: {
+          notEmpty: {
+            message: 'Please enter surname'
           }
         }
       },
       email: {
         validators: {
           notEmpty: {
-            message: 'Please enter your email'
+            message: 'Please enter the email'
           },
           emailAddress: {
             message: 'The value is not a valid email address'
           }
         }
       },
-      userContact: {
+      job: {
         validators: {
           notEmpty: {
-            message: 'Please enter your contact'
-          }
-        }
-      },
-      company: {
-        validators: {
-          notEmpty: {
-            message: 'Please enter your company'
+            message: 'Please enter the job'
           }
         }
       }
@@ -488,15 +508,16 @@ $(function () {
     }
   }).on('core.form.valid', function () {
     // adding or updating user when form successfully validate
+    var dataForm = $('#addNewUserForm');
     $.ajax({
-      data: $('#addNewUserForm').serialize(),
+      data: dataForm.serialize(),
       url: `send-invitation`,
       type: 'POST',
       beforeSend: function () {
         $(".layout-container").block({
           message:
             '<div class="sk-wave sk-primary mx-auto"><div class="sk-rect sk-wave-rect"></div> <div class="sk-rect sk-wave-rect"></div> <div class="sk-rect sk-wave-rect"></div> <div class="sk-rect sk-wave-rect"></div> <div class="sk-rect sk-wave-rect"></div></div>',
-          timeout: 1000,
+          timeout: 3000,
           css: {
             backgroundColor: "transparent",
             border: "0"
@@ -510,6 +531,56 @@ $(function () {
       success: function (status) {
         dt_user.draw();
         offCanvasForm.offcanvas('hide');
+        let formData = JSON.parse(JSON.stringify(dataForm.serializeArray()));
+        console.log(formData);
+
+        if($('.invitations-container').length) {
+          $('.invitation-item').after(`<div class="invitation-item w-100 row justify-content-between">
+            <div class="col">
+              <small>${formData[1].value} ${formData[2].value}</small>
+            </div>
+            <div class="col">
+              <small>${formData[3].value}</small>
+            </div>
+            <div class="col">
+              <small>${formData[4].value}</small>
+            </div>
+            <div class="col">
+              <small>Right now</small>
+            </div>
+          </div>`);
+        } else {
+          $('.users-container').before(`<div class="row g-4 mb-4">
+          <div class="col-sm-12 col-xl-12">
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex align-items-start justify-content-between">
+                  <div class="content-left w-75">
+                    <span class="mb-2">Pending invitations</span>
+                      <div class="w-100 row justify-content-between">
+                        <div class="col">
+                          <small>${formData[1].value} ${formData[2].value}</small>
+                        </div>
+                        <div class="col">
+                          <small>${formData[3].value}</small>
+                        </div>
+                        <div class="col">
+                          <small>${formData[4].value}</small>
+                        </div>
+                        <div class="col">
+                          <small>Right now</small>
+                        </div>
+                      </div>
+                  </div>
+                  <span class="badge bg-label-warning rounded p-2">
+                    <i class="bx bx-time-five bx-sm"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>`);
+        }
 
         // sweetalert
         Swal.fire({
