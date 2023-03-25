@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Notification;
 
+use App\Models\User;
 use App\Models\Company;
 use App\Models\Company_invitation;
 
@@ -75,9 +76,14 @@ class CompanyController extends Controller
 
     public function usersList() {
       if($user = Auth::user()) {
+        // Get the company by ID
         $company = Company::find($user->company[0]->id);
-        $company->users;
-        return response(['data' => $company->users]);
+
+        // Get all users for the company with their roles
+        $users = User::whereHas('company', function($query) use ($company) {
+                    $query->where('company_id', $company->id);
+                })->with('roles')->get();
+        return response(['data' => $users]);
       }
     }
 

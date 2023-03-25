@@ -3061,7 +3061,52 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var alpinejs_dist_cdn__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! alpinejs/dist/cdn */ "./node_modules/alpinejs/dist/cdn.js");
 /* harmony import */ var alpinejs_dist_cdn__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(alpinejs_dist_cdn__WEBPACK_IMPORTED_MODULE_0__);
 
+ //Ajax call on read all notification
 
+var badge = $('#badge-notifications');
+document.getElementById('read-all-notifications').addEventListener('click', function (e) {
+  e.preventDefault();
+  console.log('click');
+  $.ajax({
+    url: window.location.origin + "/read-all-notifications",
+    type: "GET",
+    success: function success(data) {
+      if (data.status == 'success') {
+        badge.text('0');
+        badge.removeClass('bg-danger').addClass('bg-primary');
+      }
+    }
+  });
+}); //Ajax call on read single notification
+
+var notifications = $('.dropdown-notifications-read');
+
+if (notifications) {
+  notifications.on('click', function (e) {
+    e.preventDefault();
+    console.log('Click notification');
+    var id = e.target.parentElement.getAttribute('data-id');
+    var parent = e.target.closest('.dropdown-notifications-item');
+    console.log(parent);
+    $.ajax({
+      url: window.location.origin + "/read-notification/" + id,
+      type: "GET",
+      success: function success(data) {
+        console.log(data);
+
+        if (data.status == 'success') {
+          var currentValue = parseInt(badge.html());
+          parent.remove();
+          badge.html(currentValue - 1);
+
+          if (currentValue <= 1) {
+            $('#badge-notifications').removeClass('bg-danger').addClass('bg-primary');
+          }
+        }
+      }
+    });
+  });
+}
 }();
 var __webpack_export_target__ = window;
 for(var i in __webpack_exports__) __webpack_export_target__[i] = __webpack_exports__[i];

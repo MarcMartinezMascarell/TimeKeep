@@ -12,6 +12,9 @@ use Laravel\Jetstream\HasTeams;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use App\Http\Traits\HasCompany;
+use Illuminate\Support\Facades\DB;
+
+use Illuminate\Notifications\DatabaseNotification;
 
 class User extends Authenticatable
 {
@@ -62,5 +65,20 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    //User notifications
+    public function notifications() {
+        return $this->hasMany(DatabaseNotification::class, 'notifiable_id', 'id')->where('notifiable_type', 'App\Models\User')->take(10)->orderBy('created_at', 'desc');
+    }
+
+    //Sessions
+    public function sessions() {
+        return $this->hasMany(DB::select('sessions'), 'user_id', 'id');
+    }
+
+    //Last session
+    public function lastSession() {
+        return $this->sessions()->latest();
+    }
 
 }

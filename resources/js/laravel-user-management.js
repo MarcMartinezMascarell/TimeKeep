@@ -9,9 +9,9 @@
 // Datatable (jquery)
 $(function () {
   // Variable declaration for table
-  var dt_user_table = $('.datatables-users'),
+  var dt_user_table = $('#company_users'),
     select2 = $('.select2'),
-    userView = baseUrl + 'app/user/view/account',
+    userView = baseUrl + 'user/profile',
     offCanvasForm = $('#offcanvasAddUser');
 
   if (select2.length) {
@@ -42,7 +42,7 @@ $(function () {
         { data: 'name' },
         { data: 'email' },
         { data: 'job' },
-        { data: 'role' },
+        { data: 'roles.0.name' },
         { data: 'created_at' }
       ],
       columnDefs: [
@@ -92,7 +92,7 @@ $(function () {
               '</div>' +
               '<div class="d-flex flex-column">' +
               '<a href="' +
-              userView +
+              userView + '/' + full['id_public'] +
               '" class="text-body text-truncate"><span class="fw-semibold">' +
               $name +
               '</span></a>' +
@@ -123,9 +123,9 @@ $(function () {
           // User Role
           targets: 3,
           render: function (data, type, full, meta) {
-            var $role = full['role'];
+            var $role = full['roles'];
 
-            return '<span class="user-email">' + $role + '</span>';
+            return '<span class="user-email">' + $role[0]['name'] + '</span>';
           }
         },
         {

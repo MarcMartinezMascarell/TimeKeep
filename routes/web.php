@@ -2,7 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\Extendeds\AuthenticatedSessionController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\UserProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,30 +17,31 @@ use App\Http\Controllers\CompanyController;
 |
 */
 
-$controller_path = 'App\Http\Controllers';
-
 
 
 // pages
-Route::get('/pages/misc-error', $controller_path . '\pages\MiscError@index')->name('pages-misc-error');
+Route::get('/pages/misc-error', 'App\Http\Controllers\pages\MiscError@index')->name('pages-misc-error');
 
 // authentication
 // Route::get('/auth/login-basic', $controller_path . '\authentications\LoginBasic@index')->name('auth-login-basic');
 // Route::get('/auth/register-basic', $controller_path . '\authentications\RegisterBasic@index')->name('auth-register-basic');
+Route::post('/login', [AuthenticatedSessionController::class, 'store'])
+    ->middleware(['guest'])
+    ->name('login');
 
 
 //Accept invitation
 Route::get('/accept-company-invitation', [CompanyController::class, 'acceptInvitation'])->name('accept.invitation');
 
 Route::middleware(['auth:sanctum',config('jetstream.auth_session'),'verified'])->group(function () {
-    $controller_path = 'App\Http\Controllers';
     // Main Page Route
-    Route::get('/', $controller_path . '\pages\HomePage@index')->name('pages-home');
-    Route::get('/page-2', $controller_path . '\pages\Page2@index')->name('pages-page-2');
+    Route::get('/', 'App\Http\Controllers\pages\HomePage@index')->name('pages-home');
+    Route::get('/page-2', 'App\Http\Controllers\pages\Page2@index')->name('pages-page-2');
 
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', function () {return view('dashboard');})->name('dashboard');
+
+    //USERS
+    Route::get('/user/profile/{id?}', [UserProfileController::class, 'show'])->name('profile.show');
 
 
     //NOTIFICATIONS

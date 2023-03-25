@@ -26,6 +26,7 @@ return new class extends Migration
             $table->foreignId('current_team_id')->nullable();
             $table->string('profile_photo_path', 2048)->nullable();
             $table->string('locale', 3)->default('en');
+            $table->timestamp('last_login_at')->nullable();
             $table->timestamps();
         });
     }

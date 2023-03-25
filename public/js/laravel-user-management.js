@@ -11,9 +11,9 @@ var __webpack_exports__ = {};
 
 $(function () {
   // Variable declaration for table
-  var dt_user_table = $('.datatables-users'),
+  var dt_user_table = $('#company_users'),
       select2 = $('.select2'),
-      userView = baseUrl + 'users/',
+      userView = baseUrl + 'user/profile',
       offCanvasForm = $('#offcanvasAddUser');
 
   if (select2.length) {
@@ -45,6 +45,10 @@ $(function () {
         data: 'name'
       }, {
         data: 'email'
+      }, {
+        data: 'job'
+      }, {
+        data: 'roles.0.name'
       }, {
         data: 'created_at'
       }],
@@ -81,7 +85,7 @@ $(function () {
           $initials = (($initials.shift() || '') + ($initials.pop() || '')).toUpperCase();
           $output = '<span class="avatar-initial rounded-circle bg-label-' + $state + '">' + $initials + '</span>'; // Creates full output for row
 
-          var $row_output = '<div class="d-flex justify-content-start align-items-center user-name">' + '<div class="avatar-wrapper">' + '<div class="avatar avatar-sm me-3">' + $output + '</div>' + '</div>' + '<div class="d-flex flex-column">' + '<a href="' + userView + full['id_public'] + '" class="text-body text-truncate"><span class="fw-semibold">' + $name + '</span></a>' + '</div>' + '</div>';
+          var $row_output = '<div class="d-flex justify-content-start align-items-center user-name">' + '<div class="avatar-wrapper">' + '<div class="avatar avatar-sm me-3">' + $output + '</div>' + '</div>' + '<div class="d-flex flex-column">' + '<a href="' + userView + '/' + full['id_public'] + '" class="text-body text-truncate"><span class="fw-semibold">' + $name + '</span></a>' + '</div>' + '</div>';
           return $row_output;
         }
       }, {
@@ -90,6 +94,20 @@ $(function () {
         render: function render(data, type, full, meta) {
           var $email = full['email'];
           return '<span class="user-email">' + $email + '</span>';
+        }
+      }, {
+        // User Job
+        targets: 3,
+        render: function render(data, type, full, meta) {
+          var $job = full['job'];
+          return '<span class="user-email">' + $job + '</span>';
+        }
+      }, {
+        // User Role
+        targets: 3,
+        render: function render(data, type, full, meta) {
+          var $role = full['roles'];
+          return '<span class="user-email">' + $role[0]['name'] + '</span>';
         }
       }, {
         // email verify
@@ -171,26 +189,26 @@ $(function () {
             }
           }
         }, {
-          extend: 'excel',
+          extend: 'excelHtml5',
           title: 'Users',
           text: 'Excel',
           className: 'dropdown-item',
           exportOptions: {
-            columns: [2, 3],
-            // prevent avatar to be display
-            format: {
-              body: function body(inner, coldex, rowdex) {
-                if (inner.length <= 0) return inner;
-                var el = $.parseHTML(inner);
-                var result = '';
-                $.each(el, function (index, item) {
-                  if (item.classList.contains('user-name')) {
-                    result = result + item.lastChild.textContent;
-                  } else result = result + item.innerText;
-                });
-                return result;
-              }
-            }
+            columns: [2, 3] // prevent avatar to be display
+            // format: {
+            //   body: function (inner, coldex, rowdex) {
+            //     if (inner.length <= 0) return inner;
+            //     var el = $.parseHTML(inner);
+            //     var result = '';
+            //     $.each(el, function (index, item) {
+            //       if (item.classList.contains('user-name')) {
+            //         result = result + item.lastChild.textContent;
+            //       } else result = result + item.innerText;
+            //     });
+            //     return result;
+            //   }
+            // }
+
           }
         }, {
           extend: 'pdf',
@@ -360,31 +378,31 @@ $(function () {
       name: {
         validators: {
           notEmpty: {
-            message: 'Please enter fullname'
+            message: 'Please enter name'
+          }
+        }
+      },
+      surname: {
+        validators: {
+          notEmpty: {
+            message: 'Please enter surname'
           }
         }
       },
       email: {
         validators: {
           notEmpty: {
-            message: 'Please enter your email'
+            message: 'Please enter the email'
           },
           emailAddress: {
             message: 'The value is not a valid email address'
           }
         }
       },
-      userContact: {
+      job: {
         validators: {
           notEmpty: {
-            message: 'Please enter your contact'
-          }
-        }
-      },
-      company: {
-        validators: {
-          notEmpty: {
-            message: 'Please enter your company'
+            message: 'Please enter the job'
           }
         }
       }
@@ -406,14 +424,15 @@ $(function () {
     }
   }).on('core.form.valid', function () {
     // adding or updating user when form successfully validate
+    var dataForm = $('#addNewUserForm');
     $.ajax({
-      data: $('#addNewUserForm').serialize(),
+      data: dataForm.serialize(),
       url: "send-invitation",
       type: 'POST',
       beforeSend: function beforeSend() {
         $(".layout-container").block({
           message: '<div class="sk-wave sk-primary mx-auto"><div class="sk-rect sk-wave-rect"></div> <div class="sk-rect sk-wave-rect"></div> <div class="sk-rect sk-wave-rect"></div> <div class="sk-rect sk-wave-rect"></div> <div class="sk-rect sk-wave-rect"></div></div>',
-          timeout: 1000,
+          timeout: 3000,
           css: {
             backgroundColor: "transparent",
             border: "0"
@@ -426,7 +445,16 @@ $(function () {
       },
       success: function success(status) {
         dt_user.draw();
-        offCanvasForm.offcanvas('hide'); // sweetalert
+        offCanvasForm.offcanvas('hide');
+        var formData = JSON.parse(JSON.stringify(dataForm.serializeArray()));
+        console.log(formData);
+
+        if ($('.invitations-container').length) {
+          $('.invitation-item').after("<div class=\"invitation-item w-100 row justify-content-between\">\n            <div class=\"col\">\n              <small>".concat(formData[1].value, " ").concat(formData[2].value, "</small>\n            </div>\n            <div class=\"col\">\n              <small>").concat(formData[3].value, "</small>\n            </div>\n            <div class=\"col\">\n              <small>").concat(formData[4].value, "</small>\n            </div>\n            <div class=\"col\">\n              <small>Right now</small>\n            </div>\n          </div>"));
+        } else {
+          $('.users-container').before("<div class=\"row g-4 mb-4\">\n          <div class=\"col-sm-12 col-xl-12\">\n            <div class=\"card\">\n              <div class=\"card-body\">\n                <div class=\"d-flex align-items-start justify-content-between\">\n                  <div class=\"content-left w-75\">\n                    <span class=\"mb-2\">Pending invitations</span>\n                      <div class=\"w-100 row justify-content-between\">\n                        <div class=\"col\">\n                          <small>".concat(formData[1].value, " ").concat(formData[2].value, "</small>\n                        </div>\n                        <div class=\"col\">\n                          <small>").concat(formData[3].value, "</small>\n                        </div>\n                        <div class=\"col\">\n                          <small>").concat(formData[4].value, "</small>\n                        </div>\n                        <div class=\"col\">\n                          <small>Right now</small>\n                        </div>\n                      </div>\n                  </div>\n                  <span class=\"badge bg-label-warning rounded p-2\">\n                    <i class=\"bx bx-time-five bx-sm\"></i>\n                  </span>\n                </div>\n              </div>\n            </div>\n          </div>\n        </div>"));
+        } // sweetalert
+
 
         Swal.fire({
           icon: 'success',
